@@ -33,9 +33,10 @@ class ZipperUpper
 		$this->fefh = Context::getInstance()->oFrontEndFileHandler;
 		
 		$this->cacheDir = _XE_PATH_ . 'files/cache/zipperupper';
-		if(!file_exists($this->cache_dir))
+		if(!file_exists($this->cacheDir))
 		{
-			mkdir($this->cache_dir, null, true);
+			$fileHandler = new FileHandler();
+			$fileHandler->makeDir($this->cacheDir);
 		}
 		
 		if(strncasecmp(_XE_PATH_, $_SERVER['DOCUMENT_ROOT'], strlen($_SERVER['DOCUMENT_ROOT'])) === 0)
@@ -202,7 +203,7 @@ class ZipperUpper
 			$path = rtrim($relativeTo, '/') . '/' . $path;
 		}
 		
-		if(preg_match('/^(.+)([?#].+)$/', $path, $matches))
+		if(preg_match('/^(.+?)([?#].+)$/', $path, $matches))
 		{
 			$path = $matches[1];
 			$args = $matches[2];
