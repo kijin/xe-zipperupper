@@ -11,6 +11,6 @@ if(!defined('__XE__')) exit;
 if($called_position !== 'before_display_content') return;
 if(version_compare(PHP_VERSION, '5.3', '<')) return;
 
-include 'zipperupper.class.php';
+include_once 'zipperupper.class.php';
 $zipperupper = new ZipperUpper();
 $zipperupper->zipUp();
