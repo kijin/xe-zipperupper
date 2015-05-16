@@ -186,6 +186,17 @@ class ZipperUpper
 		{
 			$path = rtrim($relativeTo, '/') . '/' . $path;
 		}
-		return realpath(_XE_PATH_ . $path);
+		
+		if(preg_match('/^(.+)([?#].+)$/', $path, $matches))
+		{
+			$path = $matches[1];
+			$args = $matches[2];
+		}
+		else
+		{
+			$args = '';
+		}
+		
+		return realpath(_XE_PATH_ . $path) . $args;
 	}
 }
