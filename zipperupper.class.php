@@ -13,7 +13,7 @@ class ZipperUpper
 {
 	public $fefh = null;
 	public $cacheDir = null;
-	public $relativeBasePath = null;
+	public $urlPrefix = null;
 	public $debugMode = null;
 	
 	public $cssList = array();
@@ -41,11 +41,11 @@ class ZipperUpper
 		
 		if(strncasecmp(_XE_PATH_, $_SERVER['DOCUMENT_ROOT'], strlen($_SERVER['DOCUMENT_ROOT'])) === 0)
 		{
-			$this->relativeBasePath = substr(_XE_PATH_, strlen($_SERVER['DOCUMENT_ROOT']));
+			$this->urlPrefix = substr(_XE_PATH_, strlen($_SERVER['DOCUMENT_ROOT']));
 		}
 		else
 		{
-			$this->relativeBasePath = './';
+			$this->urlPrefix = '../../../';
 		}
 	}
 	
@@ -193,7 +193,7 @@ class ZipperUpper
 	public function getClientPath($path, $relativeTo = null)
 	{
 		$path = $this->getServerPath($path, $relativeTo);
-		return '../../../' . substr($path, strlen(_XE_PATH_));
+		return $this->urlPrefix . substr($path, strlen(_XE_PATH_));
 	}
 	
 	public function getServerPath($path, $relativeTo = null)
