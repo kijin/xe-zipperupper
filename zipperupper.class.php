@@ -80,6 +80,8 @@ class ZipperUpper
 		{
 			$thish = $this;
 			$fp = fopen($this->cssCacheFilename, 'w');
+			$canReplace = (bool)$fp;
+			
 			fwrite($fp, '@charset "utf-8";' . "\n\n");
 			
 			foreach($this->cssList as $filename)
@@ -108,14 +110,20 @@ class ZipperUpper
 			
 			fclose($fp);
 		}
-		
-		foreach($this->cssUnsetList as $cssUnsetItem)
+		else
 		{
-			unset($this->fefh->cssMap[$cssUnsetItem[0]][$cssUnsetItem[1]]);
-			unset($this->fefh->cssMapIndex[$cssUnsetItem[1]]);
+			$canReplace = true;
 		}
 		
-		$this->fefh->loadFile(array('./' . substr($this->cssCacheFilename, strlen(_XE_PATH_))));
+		if($canReplace)
+		{
+			foreach($this->cssUnsetList as $cssUnsetItem)
+			{
+				unset($this->fefh->cssMap[$cssUnsetItem[0]][$cssUnsetItem[1]]);
+				unset($this->fefh->cssMapIndex[$cssUnsetItem[1]]);
+			}
+			$this->fefh->loadFile(array('./' . substr($this->cssCacheFilename, strlen(_XE_PATH_))));
+		}
 	}
 	
 	public function zipJSHead()
@@ -146,6 +154,7 @@ class ZipperUpper
 		{
 			$thish = $this;
 			$fp = fopen($this->jsHeadCacheFilename, 'w');
+			$canReplace = (bool)$fp;
 			
 			foreach($this->jsHeadList as $filename)
 			{
@@ -159,14 +168,20 @@ class ZipperUpper
 			
 			fclose($fp);
 		}
-		
-		foreach($this->jsHeadUnsetList as $jsHeadUnsetItem)
+		else
 		{
-			unset($this->fefh->jsHeadMap[$jsHeadUnsetItem[0]][$jsHeadUnsetItem[1]]);
-			unset($this->fefh->jsHeadMapIndex[$jsHeadUnsetItem[1]]);
+			$canReplace = true;
 		}
 		
-		$this->fefh->loadFile(array('./' . substr($this->jsHeadCacheFilename, strlen(_XE_PATH_)), 'head'));
+		if($canReplace)
+		{
+			foreach($this->jsHeadUnsetList as $jsHeadUnsetItem)
+			{
+				unset($this->fefh->jsHeadMap[$jsHeadUnsetItem[0]][$jsHeadUnsetItem[1]]);
+				unset($this->fefh->jsHeadMapIndex[$jsHeadUnsetItem[1]]);
+			}
+			$this->fefh->loadFile(array('./' . substr($this->jsHeadCacheFilename, strlen(_XE_PATH_)), 'head'));
+		}
 	}
 	
 	public function zipJSBody()
