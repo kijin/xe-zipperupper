@@ -213,6 +213,14 @@ class ZipperUpper
 			$args = '';
 		}
 		
-		return realpath(_XE_PATH_ . $path) . $args;
+		$realpath = realpath(_XE_PATH_ . $path);
+		if ($realpath === false)
+		{
+			return _XE_PATH_ . $path . $args;
+		}
+		else
+		{
+			return $realpath . $args;
+		}
 	}
 }
