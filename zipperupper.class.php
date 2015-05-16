@@ -58,14 +58,19 @@ class ZipperUpper
 	
 	public function zipCSS()
 	{
-		foreach($this->fefh->cssMapIndex as $key => $index)
+		$cssMap = $this->fefh->cssMap;
+		ksort($cssMap);
+		
+		foreach($cssMap as $index => $items)
 		{
-			$item = $this->fefh->cssMap[$index][$key];
-			$path = $item->cdnPath . '/' . $item->fileName;
-			if(!preg_match('#^(https?:)?//#i', $path))
+			foreach($items as $key => $item)
 			{
-				$this->cssList[] = $this->getServerPath($path);
-				$this->cssUnsetList[] = array($index, $key);
+				$path = $item->cdnPath . '/' . $item->fileName;
+				if(!preg_match('#^(https?:)?//#i', $path))
+				{
+					$this->cssList[] = $this->getServerPath($path);
+					$this->cssUnsetList[] = array($index, $key);
+				}
 			}
 		}
 		
@@ -124,17 +129,19 @@ class ZipperUpper
 	
 	public function zipJSHead()
 	{
-		$jsHeadMapIndex = $this->fefh->jsHeadMapIndex;
-		asort($jsHeadMapIndex);
+		$jsHeadMap = $this->fefh->jsHeadMap;
+		ksort($jsHeadMap);
 		
-		foreach($jsHeadMapIndex as $key => $index)
+		foreach($jsHeadMap as $index => $items)
 		{
-			$item = $this->fefh->jsHeadMap[$index][$key];
-			$path = $item->cdnPath . '/' . $item->fileName;
-			if(!preg_match('#^(https?:)?//#i', $path))
+			foreach($items as $key => $item)
 			{
-				$this->jsHeadList[] = $this->getServerPath($path);
-				$this->jsHeadUnsetList[] = array($index, $key);
+				$path = $item->cdnPath . '/' . $item->fileName;
+				if(!preg_match('#^(https?:)?//#i', $path))
+				{
+					$this->jsHeadList[] = $this->getServerPath($path);
+					$this->jsHeadUnsetList[] = array($index, $key);
+				}
 			}
 		}
 		
