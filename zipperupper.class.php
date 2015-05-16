@@ -68,12 +68,7 @@ class ZipperUpper
 			}
 		}
 		
-		$lastModifiedTime = 0;
-		foreach($this->cssList as $filename)
-		{
-			$lastModifiedTime = max($lastModifiedTime, filemtime($filename));
-		}
-		
+		$lastModifiedTime = $this->getLastModifiedTime($this->cssList);
 		$this->cssCacheFilename = $this->cacheDir . '/' . sha1(serialize($this->cssList)) . '.css';
 		
 		if($this->debugMode || !file_exists($this->cssCacheFilename) || filemtime($this->cssCacheFilename) <= $lastModifiedTime)
@@ -142,12 +137,7 @@ class ZipperUpper
 			}
 		}
 		
-		$lastModifiedTime = 0;
-		foreach($this->jsHeadList as $filename)
-		{
-			$lastModifiedTime = max($lastModifiedTime, filemtime($filename));
-		}
-		
+		$lastModifiedTime = $this->getLastModifiedTime($this->jsHeadList);
 		$this->jsHeadCacheFilename = $this->cacheDir . '/' . sha1(serialize($this->jsHeadList)) . '.head.js';
 		
 		if($this->debugMode || !file_exists($this->jsHeadCacheFilename) || filemtime($this->jsHeadCacheFilename) <= $lastModifiedTime)
@@ -187,6 +177,16 @@ class ZipperUpper
 	public function zipJSBody()
 	{
 		
+	}
+	
+	public function getLastModifiedTime(array $filelist)
+	{
+		$lastModifiedTime = filemtime(__FILE__);
+		foreach($filelist as $filename)
+		{
+			$lastModifiedTime = max($lastModifiedTime, filemtime($filename));
+		}
+		return $lastModifiedTime;
 	}
 	
 	public function getClientPath($path, $relativeTo = null)
