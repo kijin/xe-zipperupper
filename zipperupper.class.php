@@ -171,7 +171,7 @@ class ZipperUpper
 				$path = $item->cdnPath . '/' . $item->fileName;
 				if(!preg_match('#^(https?:)?//#i', $path))
 				{
-					$this->jsHeadList[] = $this->getServerPath($path);
+					$this->jsHeadList[] = array($this->getServerPath($path), trim($item->targetIe));
 					$this->jsHeadUnsetList[] = array($index, $key);
 				}
 			}
@@ -192,11 +192,26 @@ class ZipperUpper
 			foreach($this->jsHeadList as $filename)
 			{
 				// Copy each original file to the cache file.
-				if($fporiginal = fopen($filename, 'r'))
+				if($fporiginal = fopen($filename[0], 'r'))
 				{
-					fwrite($fp, '/* Source: ./' . substr($filename, strlen(_XE_PATH_)) . ' */' . "\n\n");
+					// Write a comment to indicate the source.
+					fwrite($fp, '/* Source: ./' . substr($filename[0], strlen(_XE_PATH_)) . ' */' . "\n\n");
+					
+					// Rewrite IE conditional comments as a JS condition.
+					if($filename[1] !== '' && $jsCondition = $this->parseTargetIE($filename[1]))
+					{
+						fwrite($fp, $jsCondition . ' {' . "\n\n");
+					}
+					
+					// Copy the actual content of the file.
 					stream_copy_to_stream($fporiginal, $fp);
 					fwrite($fp, $script . "\n\n");
+					
+					// Close conditional comments.
+					if($filename[1] !== '' && $jsCondition)
+					{
+						fwrite($fp, '}' . "\n\n");
+					}
 				}
 			}
 			
@@ -232,6 +247,7 @@ class ZipperUpper
 		$lastModifiedTime = filemtime(__FILE__);
 		foreach($filelist as $filename)
 		{
+			if(is_array($filename)) $filename = $filename[0];
 			$lastModifiedTime = max($lastModifiedTime, filemtime($filename));
 		}
 		return $lastModifiedTime;
@@ -273,6 +289,32 @@ class ZipperUpper
 		else
 		{
 			return $realpath . $args;
+		}
+	}
+	
+	// Parse Target-IE conditional comments.
+	public function parseTargetIE($target)
+	{
+		if(preg_match('/^(!\s?|[gl]te?\s*)?\(?IE\s*([0-9.]+)\)?$/', trim($target), $matches))
+		{
+			$cond = $matches[1] ? trim($matches[1]) : 'eq';
+			$version = $matches[2];
+			switch($cond)
+			{
+				case '!': $operator = '!='; break;
+				case 'gt': $operator = '>'; break;
+				case 'gte': $operator = '>='; break;
+				case 'lt': $operator = '<'; break;
+				case 'lte': $operator = '<='; break;
+				default: $operator = '==';
+			}
+			
+			return 'if (navigator.userAgent && (window.ziptargetie = navigator.userAgent.match(/MSIE ([0-9.]+)/)) && ' .
+				'parseFloat(window.ziptargetie[1]) ' . $operator . ' ' . $version . ')';
+		}
+		else
+		{
+			return false;
 		}
 	}
 }
