@@ -11,27 +11,38 @@ if(!defined('__XE__')) exit;
 
 class ZipperUpper
 {
+	// The FrontEndFileHandler instance is stored here.
 	public $fefh = null;
+	
+	// Path settings are stored here.
 	public $cacheDir = null;
 	public $urlPrefix = null;
+	
+	// Set this variable to true to force recompilation every time.
 	public $debugMode = null;
 	
+	// Properties for storing CSS references.
 	public $cssList = array();
 	public $cssUnsetList = array();
 	public $cssCacheFilename = null;
 	
+	// Properties for storing JS <head> references.
 	public $jsHeadList = array();
 	public $jsHeadUnsetList = array();
 	public $jsHeadCacheFilename = null;
 	
+	// Properties for storing JS <body> references.
 	public $jsBodyList = array();
 	public $jsBodyUnsetList = array();
 	public $jsBodyCacheFilename = null;
 	
+	// Constructor.
 	public function __construct()
 	{
+		// Retrieve the FrontEndFileHandler instance from the Context class.
 		$this->fefh = Context::getInstance()->oFrontEndFileHandler;
 		
+		// Create the cache directory if it does not exist.
 		$this->cacheDir = _XE_PATH_ . 'files/cache/zipperupper';
 		if(!file_exists($this->cacheDir))
 		{
@@ -39,6 +50,7 @@ class ZipperUpper
 			$fileHandler->makeDir($this->cacheDir);
 		}
 		
+		// Find out the absolute or relative path of XE installation.
 		if(strncasecmp(_XE_PATH_, $_SERVER['DOCUMENT_ROOT'], strlen($_SERVER['DOCUMENT_ROOT'])) === 0)
 		{
 			$this->urlPrefix = substr(_XE_PATH_, strlen($_SERVER['DOCUMENT_ROOT']));
@@ -49,6 +61,7 @@ class ZipperUpper
 		}
 	}
 	
+	// Call this method to start zipping.
 	public function zipUp()
 	{
 		$this->zipCSS();
@@ -56,11 +69,14 @@ class ZipperUpper
 		$this->zipJSBody();
 	}
 	
+	// Merge all CSS references into one file.
 	public function zipCSS()
 	{
+		// Get currently loaded CSS references and sort them by priority.
 		$cssMap = $this->fefh->cssMap;
 		ksort($cssMap);
 		
+		// Add all non-remote references to the list.
 		foreach($cssMap as $index => $items)
 		{
 			foreach($items as $key => $item)
@@ -74,21 +90,31 @@ class ZipperUpper
 			}
 		}
 		
+		// Get the last modified timestamp and the cache file name.
 		$lastModifiedTime = $this->getLastModifiedTime($this->cssList);
 		$this->cssCacheFilename = $this->cacheDir . '/' . sha1(serialize($this->cssList)) . '.css';
 		
+		// Recompile the cache file if necessary.
 		if($this->debugMode || !file_exists($this->cssCacheFilename) || filemtime($this->cssCacheFilename) <= $lastModifiedTime)
 		{
+			// Create a copy of $this because it cannot be passed to a closure in some versions of PHP.
 			$thish = $this;
+			
+			// Open the cache file.
 			$fp = fopen($this->cssCacheFilename, 'w');
 			$canReplace = (bool)$fp;
 			
+			// Write the @charset directive at the top.
 			fwrite($fp, '@charset "utf-8";' . "\n\n");
 			
+			// Open each original file.
 			foreach($this->cssList as $filename)
 			{
+				// Trim the contents and remove duplicate @charset directives.
 				$styles = trim(file_get_contents($filename));
 				$styles = trim(preg_replace('#^@charset\s.+?[;\n]#i', '', $styles));
+				
+				// Convert all url() references to be absolute or relative to the cache file path.
 				$styles = preg_replace_callback('#url\(([^\)]+)\)#i', function($matches) use($thish, $filename) {
 					if(strncasecmp($matches[1], 'data:', 5) === 0)
 					{
@@ -105,10 +131,12 @@ class ZipperUpper
 					}
 				}, $styles);
 				
+				// Write the converted CSS to the cache file.
 				fwrite($fp, '/* Source: ./' . substr($filename, strlen(_XE_PATH_)) . ' */' . "\n\n");
 				fwrite($fp, $styles . "\n\n");
 			}
 			
+			// Close the cache file.
 			fclose($fp);
 		}
 		else
@@ -116,6 +144,7 @@ class ZipperUpper
 			$canReplace = true;
 		}
 		
+		// Remove original references and insert cache file instead, if it is safe to do so.
 		if($canReplace)
 		{
 			foreach($this->cssUnsetList as $cssUnsetItem)
@@ -127,11 +156,14 @@ class ZipperUpper
 		}
 	}
 	
+	// Merge all JS <head> references into one file.
 	public function zipJSHead()
 	{
+		// Get currently loaded JS <head> references and sort them by priority.
 		$jsHeadMap = $this->fefh->jsHeadMap;
 		ksort($jsHeadMap);
 		
+		// Add all non-remote references to the list.
 		foreach($jsHeadMap as $index => $items)
 		{
 			foreach($items as $key => $item)
@@ -145,17 +177,21 @@ class ZipperUpper
 			}
 		}
 		
+		// Get the last modified timestamp and the cache file name.
 		$lastModifiedTime = $this->getLastModifiedTime($this->jsHeadList);
 		$this->jsHeadCacheFilename = $this->cacheDir . '/' . sha1(serialize($this->jsHeadList)) . '.head.js';
 		
+		// Recompile the cache file if necessary.
 		if($this->debugMode || !file_exists($this->jsHeadCacheFilename) || filemtime($this->jsHeadCacheFilename) <= $lastModifiedTime)
 		{
-			$thish = $this;
+			// Open the cache file.
 			$fp = fopen($this->jsHeadCacheFilename, 'w');
 			$canReplace = (bool)$fp;
 			
+			// Open each original file.
 			foreach($this->jsHeadList as $filename)
 			{
+				// Copy each original file to the cache file.
 				if($fporiginal = fopen($filename, 'r'))
 				{
 					fwrite($fp, '/* Source: ./' . substr($filename, strlen(_XE_PATH_)) . ' */' . "\n\n");
@@ -164,6 +200,7 @@ class ZipperUpper
 				}
 			}
 			
+			// Close the cache file.
 			fclose($fp);
 		}
 		else
@@ -171,6 +208,7 @@ class ZipperUpper
 			$canReplace = true;
 		}
 		
+		// Remove original references and insert cache file instead, if it is safe to do so.
 		if($canReplace)
 		{
 			foreach($this->jsHeadUnsetList as $jsHeadUnsetItem)
@@ -182,11 +220,13 @@ class ZipperUpper
 		}
 	}
 	
+	// Merge all JS <body> references into one file.
 	public function zipJSBody()
 	{
-		
+		// This is currently not used because it does not actually help improve page load time.
 	}
 	
+	// Get the last modified timestamp of a set of files, including this file.
 	public function getLastModifiedTime(array $filelist)
 	{
 		$lastModifiedTime = filemtime(__FILE__);
@@ -197,19 +237,23 @@ class ZipperUpper
 		return $lastModifiedTime;
 	}
 	
+	// Convert a path to an absolute URL, or relative to the cache file path.
 	public function getClientPath($path, $relativeTo = null)
 	{
 		$path = $this->getServerPath($path, $relativeTo);
 		return $this->urlPrefix . substr($path, strlen(_XE_PATH_));
 	}
 	
+	// Convert a path to an absolute path on the server's filesystem.
 	public function getServerPath($path, $relativeTo = null)
 	{
+		// If the path is relative to another path, add them together.
 		if($relativeTo !== null)
 		{
 			$path = rtrim($relativeTo, '/') . '/' . $path;
 		}
 		
+		// If the path contains query strings or fragments, detach them.
 		if(preg_match('/^(.+?)([?#].+)$/', $path, $matches))
 		{
 			$path = $matches[1];
@@ -220,6 +264,7 @@ class ZipperUpper
 			$args = '';
 		}
 		
+		// Determine the real path of the given filename.
 		$realpath = realpath(_XE_PATH_ . $path);
 		if ($realpath === false)
 		{
