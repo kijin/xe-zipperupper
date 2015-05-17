@@ -82,7 +82,7 @@ class ZipperUpper
 			foreach($items as $key => $item)
 			{
 				$path = $item->cdnPath . '/' . $item->fileName;
-				if(!preg_match('#^(https?:)?//#i', $path))
+				if($item->targetIe === '' && $item->media === 'all' && !preg_match('#^(https?:)?//#i', $path))
 				{
 					$this->cssList[] = $this->getServerPath($path);
 					$this->cssUnsetList[] = array($index, $key);
