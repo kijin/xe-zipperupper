@@ -54,6 +54,7 @@ class ZipperUpper
 		if(strncasecmp(_XE_PATH_, $_SERVER['DOCUMENT_ROOT'], strlen($_SERVER['DOCUMENT_ROOT'])) === 0)
 		{
 			$this->urlPrefix = substr(_XE_PATH_, strlen(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\')));
+			$this->urlPrefix = str_replace('\\', '/', $this->urlPrefix);
 		}
 		else
 		{
@@ -256,7 +257,7 @@ class ZipperUpper
 	// Convert a path to an absolute URL, or relative to the cache file path.
 	public function getClientPath($path, $relativeTo = null)
 	{
-		$path = $this->getServerPath($path, $relativeTo);
+		$path = str_replace('\\', '/', $this->getServerPath($path, $relativeTo));
 		return $this->urlPrefix . substr($path, strlen(_XE_PATH_));
 	}
 	
