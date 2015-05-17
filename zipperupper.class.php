@@ -53,7 +53,7 @@ class ZipperUpper
 		// Find out the absolute or relative path of XE installation.
 		if(strncasecmp(_XE_PATH_, $_SERVER['DOCUMENT_ROOT'], strlen($_SERVER['DOCUMENT_ROOT'])) === 0)
 		{
-			$this->urlPrefix = substr(_XE_PATH_, strlen($_SERVER['DOCUMENT_ROOT']));
+			$this->urlPrefix = substr(_XE_PATH_, strlen(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\')));
 		}
 		else
 		{
