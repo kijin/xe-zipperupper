@@ -10,4 +10,18 @@
         <name xml:lang="ko">Kijin Sung</name>
         <name xml:lang="en">Kijin Sung</name>
     </author>
+	<extra_vars>
+		<var name="zip_type" type="select">
+			<title xml:lang="ko">합칠 대상</title>
+			<title xml:lang="en">Merge targets</title>
+			<options value="css">
+				<title xml:lang="ko">CSS에만 적용</title>
+				<title xml:lang="en">CSS only</title>
+			</options>
+			<options value="css+js">
+				<title xml:lang="ko">CSS와 JS에 적용</title>
+				<title xml:lang="en">CSS and JS</title>
+			</options>
+		</var>
+	</extra_vars>
 </addon>

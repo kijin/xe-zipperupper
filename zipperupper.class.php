@@ -63,11 +63,11 @@ class ZipperUpper
 	}
 	
 	// Call this method to start zipping.
-	public function zipUp()
+	public function zipUp($targets = 'css')
 	{
-		$this->zipCSS();
-		$this->zipJSHead();
-		$this->zipJSBody();
+		$targets = explode('+', $targets);
+		if(in_array('css', $targets)) $this->zipCSS();
+		if(in_array('js', $targets)) $this->zipJSHead();
 	}
 	
 	// Merge all CSS references into one file.

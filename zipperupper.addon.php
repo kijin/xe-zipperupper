@@ -13,4 +13,4 @@ if(version_compare(PHP_VERSION, '5.3', '<')) return;
 
 include_once 'zipperupper.class.php';
 $zipperupper = new ZipperUpper();
-$zipperupper->zipUp();
+$zipperupper->zipUp($addon_info->zip_type);
