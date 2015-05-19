@@ -119,7 +119,7 @@ class ZipperUpper
 				$styles = preg_replace_callback('#url\(([^\)]+)\)#i', function($matches) use($thish, $filename) {
 					if(strncasecmp($matches[1], 'data:', 5) === 0)
 					{
-						return $matches[1];
+						return $matches[0];
 					}
 					else
 					{
