@@ -283,7 +283,7 @@ class ZipperUpper
 		
 		// Determine the real path of the given filename.
 		$realpath = realpath(_XE_PATH_ . $path);
-		if ($realpath === false)
+		if($realpath === false)
 		{
 			return _XE_PATH_ . $path . $args;
 		}
