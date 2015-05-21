@@ -4,8 +4,8 @@
     <title xml:lang="en">ZiperUpper!</title>
     <description xml:lang="ko">여러 개의 CSS, JS 파일들을 하나로 합쳐 출력합니다.</description>
     <description xml:lang="en">Merge multiple CSS and JS files into one.</description>
-    <version>0.2</version>
-    <date>2015-05-19</date>
+    <version>0.3</version>
+    <date>2015-05-21</date>
     <author email_address="kijin@kijinsung.com" link="https://github.com/kijin">
         <name xml:lang="ko">Kijin Sung</name>
         <name xml:lang="en">Kijin Sung</name>
