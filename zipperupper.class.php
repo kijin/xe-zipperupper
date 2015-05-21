@@ -113,6 +113,7 @@ class ZipperUpper
 			{
 				// Trim the contents and remove duplicate @charset directives.
 				$styles = trim(file_get_contents($filename));
+				$styles = trim(str_replace("\xEF\xBB\xBF", '', $styles));
 				$styles = trim(preg_replace('#^@charset\s.+?[;\n]#i', '', $styles));
 				
 				// Convert all url() references to be absolute or relative to the cache file path.
@@ -205,6 +206,10 @@ class ZipperUpper
 					}
 					
 					// Copy the actual content of the file.
+					if(fread($fporiginal, 3) !== "\xEF\xBB\xBF")
+					{
+						fseek($fporiginal, 0);
+					}
 					stream_copy_to_stream($fporiginal, $fp);
 					fwrite($fp, $script . "\n\n");
 					
