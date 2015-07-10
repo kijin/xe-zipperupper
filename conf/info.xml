@@ -23,5 +23,17 @@
 				<title xml:lang="en">CSS and JS</title>
 			</options>
 		</var>
+		<var name="zip_target" type="select">
+			<title xml:lang="ko">적용할 브라우저</title>
+			<title xml:lang="en">Target Browser</title>
+			<options value="ie">
+				<title xml:lang="ko">IE 10이하</title>
+				<title xml:lang="en">IE 10 below</title>
+			</options>
+			<options value="all">
+				<title xml:lang="ko">모든 브라우저</title>
+				<title xml:lang="en">all browser</title>
+			</options>
+		</var>
 	</extra_vars>
 </addon>
