@@ -25,14 +25,14 @@
 		</var>
 		<var name="zip_target" type="select">
 			<title xml:lang="ko">적용할 브라우저</title>
-			<title xml:lang="en">Target Browser</title>
-			<options value="ie">
-				<title xml:lang="ko">IE 10이하</title>
-				<title xml:lang="en">IE 10 below</title>
+			<title xml:lang="en">Target browsers</title>
+			<options value="ie10">
+				<title xml:lang="ko">IE 10 이하</title>
+				<title xml:lang="en">IE 10 and below</title>
 			</options>
 			<options value="all">
 				<title xml:lang="ko">모든 브라우저</title>
-				<title xml:lang="en">all browser</title>
+				<title xml:lang="en">All browsers</title>
 			</options>
 		</var>
 	</extra_vars>
