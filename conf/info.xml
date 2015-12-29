@@ -18,6 +18,10 @@
 				<title xml:lang="ko">CSS에만 적용</title>
 				<title xml:lang="en">CSS only</title>
 			</options>
+			<options value="js">
+				<title xml:lang="ko">JS에만 적용</title>
+				<title xml:lang="en">JS only</title>
+			</options>
 			<options value="css+js">
 				<title xml:lang="ko">CSS와 JS에 적용</title>
 				<title xml:lang="en">CSS and JS</title>
